@@ -1,23 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+import { AppProvider } from "./contexts";
+import { OverviewProvider } from "./contexts/overviewContext";
+import { SidebarProvider } from "./contexts/sidebarContext";
+import MainRoute from "./routes";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="!font-plusJakataSans tracking-[-0.5px]">
+      <AppProvider>
+        <SidebarProvider>
+          <OverviewProvider>
+            <MainRoute />
+          </OverviewProvider>
+        </SidebarProvider>
+      </AppProvider>
     </div>
   );
 }
