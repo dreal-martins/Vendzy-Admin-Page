@@ -2,6 +2,7 @@ import React from "react";
 import { ConfigProvider, Table } from "antd";
 import orderImg1 from "../../../assets/images/orderImg1.svg";
 import orderImg2 from "../../../assets/images/orderImg2.svg";
+import { useNavigate } from "react-router-dom";
 
 const columns = [
   {
@@ -131,18 +132,33 @@ const data = [
   },
 ];
 
-const OrderTable = () => (
-  <ConfigProvider
-    theme={{
-      components: {
-        Table: {
-          headerColor: "#9B9697",
+const OrderTable = () => {
+  const navigate = useNavigate();
+
+  const handleRowClick = (record) => {
+    navigate(`/order/order-detail`);
+  };
+
+  return (
+    <ConfigProvider
+      theme={{
+        components: {
+          Table: {
+            headerColor: "#9B9697",
+          },
         },
-      },
-    }}
-  >
-    <Table columns={columns} dataSource={data} pagination={true} />
-  </ConfigProvider>
-);
+      }}
+    >
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={true}
+        onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+        })}
+      />
+    </ConfigProvider>
+  );
+};
 
 export default OrderTable;

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Cards } from "../OverView";
-import { FaArrowDownLong, FaArrowUpLong } from "react-icons/fa6";
+import { FaArrowDownLong } from "react-icons/fa6";
 import { useAppContext } from "../../contexts";
 import refreshIcon from "../../assets/icons/refreshIcon.svg";
 import filterIcon from "../../assets/icons/sortIcon.svg";

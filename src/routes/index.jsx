@@ -23,6 +23,17 @@ const Transactions = lazy(() => import("../modules/Transactions"));
 const Orders = lazy(() => import("../modules/Orders"));
 const Disputes = lazy(() => import("../modules/Disputes"));
 const Notifications = lazy(() => import("../modules/Notifications"));
+const UserDetail = lazy(() => import("../modules/Users/UserDetail"));
+const TransactionDetails = lazy(() =>
+  import("../modules/Transactions/TransactionDetails")
+);
+const OrderDetails = lazy(() => import("../modules/Orders/OrderDetails"));
+const DisputesDetails = lazy(() =>
+  import("../modules/Disputes/DisputesDetails")
+);
+const NotificationsDetails = lazy(() =>
+  import("../modules/Notifications/NotificationDetails")
+);
 
 const MainBody = ({ children }) => {
   return (
@@ -58,48 +69,118 @@ const MainRoute = () => {
             },
             {
               path: "users",
-              errorElement: <FourZeroZero />,
-              element: (
-                <Suspense fallback={<Loader />}>
-                  <Users />
-                </Suspense>
-              ),
+              children: [
+                {
+                  index: true,
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <Users />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+                {
+                  path: ":user-detail",
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <UserDetail />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+              ],
             },
             {
               path: "transactions",
-              errorElement: <FourZeroZero />,
-              element: (
-                <Suspense fallback={<Loader />}>
-                  <Transactions />
-                </Suspense>
-              ),
+              children: [
+                {
+                  index: true,
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <Transactions />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+                {
+                  path: ":transaction-detail",
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <TransactionDetails />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+              ],
             },
             {
               path: "order",
-              element: (
-                <Suspense fallback={<Loader />}>
-                  <Orders />
-                </Suspense>
-              ),
-              errorElement: <FourZeroZero />,
+              children: [
+                {
+                  index: true,
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <Orders />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+                {
+                  path: ":order-detail",
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <OrderDetails />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+              ],
             },
             {
               path: "disputes",
-              element: (
-                <Suspense fallback={<Loader />}>
-                  <Disputes />
-                </Suspense>
-              ),
-              errorElement: <FourZeroZero />,
+              children: [
+                {
+                  index: true,
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <Disputes />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+                {
+                  path: ":disputes-detail",
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <DisputesDetails />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+              ],
             },
             {
               path: "notification",
-              errorElement: <FourZeroZero />,
-              element: (
-                <Suspense fallback={<Loader />}>
-                  <Notifications />
-                </Suspense>
-              ),
+              children: [
+                {
+                  index: true,
+                  errorElement: <FourZeroZero />,
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <Notifications />
+                    </Suspense>
+                  ),
+                },
+                {
+                  path: ":notifications-detail",
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <NotificationsDetails />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+              ],
             },
           ],
         },

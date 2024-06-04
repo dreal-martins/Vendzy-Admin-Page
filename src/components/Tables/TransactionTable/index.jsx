@@ -1,5 +1,6 @@
 import React from "react";
 import { ConfigProvider, Table } from "antd";
+import { useNavigate } from "react-router-dom";
 import avatar from "../../../assets/images/avatar.svg";
 import avatarOne from "../../../assets/images/avatar1.svg";
 import avatarTwo from "../../../assets/images/avatar2.svg";
@@ -61,7 +62,7 @@ const columns = [
           className={`${
             text === "Credit"
               ? "border border-[#83F3B2] text-[#449E6A] bg-[#EFFFF6] text-center  rounded-full py-1 px-2 text-[0.9rem]"
-              : "border border-[##FFBBBB] bg-[#FFE8E8] text-[#EF5959] text-center rounded-full py-1 px-2 text-[0.9rem]"
+              : "border border-[#FFBBBB] bg-[#FFE8E8] text-[#EF5959] text-center rounded-full py-1 px-2 text-[0.9rem]"
           }`}
         >
           {text}
@@ -110,18 +111,33 @@ const data = [
   },
 ];
 
-const TransactionTable = () => (
-  <ConfigProvider
-    theme={{
-      components: {
-        Table: {
-          headerColor: "#9B9697",
+const TransactionTable = () => {
+  const navigate = useNavigate();
+
+  const handleRowClick = (record) => {
+    navigate(`/transactions/transaction-detail`);
+  };
+
+  return (
+    <ConfigProvider
+      theme={{
+        components: {
+          Table: {
+            headerColor: "#9B9697",
+          },
         },
-      },
-    }}
-  >
-    <Table columns={columns} dataSource={data} pagination={true} />
-  </ConfigProvider>
-);
+      }}
+    >
+      <Table
+        columns={columns}
+        dataSource={data}
+        pagination={true}
+        onRow={(record) => ({
+          onClick: () => handleRowClick(record),
+        })}
+      />
+    </ConfigProvider>
+  );
+};
 
 export default TransactionTable;

@@ -35,72 +35,67 @@ export default function AuthenticatedLayout() {
           ) : (
             <Overview active={true} fillColor="#5271FF" />
           ),
-        active: pathname === "/" ? true : false,
+        active: pathname === "/",
         visible: true,
         pathlist: null,
       },
       {
         text: "User",
         path: "/users",
-        icon:
-          pathname === "/users" ? (
-            <ActiveUser />
-          ) : (
-            <User active={true} fillColor="#5271FF" />
-          ),
-        active: pathname === "/users" ? true : false,
+        icon: pathname.startsWith("/users") ? (
+          <ActiveUser />
+        ) : (
+          <User active={true} fillColor="#5271FF" />
+        ),
+        active: pathname.startsWith("/users"),
         visible: true,
         pathlist: null,
       },
       {
         text: "Transactions",
         path: "/transactions",
-        icon:
-          pathname === "/transactions" ? (
-            <ActiveTransaction />
-          ) : (
-            <Transaction active={true} fillColor="#5271FF" />
-          ),
-        active: pathname === "/transactions" ? true : false,
+        icon: pathname.startsWith("/transactions") ? (
+          <ActiveTransaction />
+        ) : (
+          <Transaction active={true} fillColor="#5271FF" />
+        ),
+        active: pathname.startsWith("/transactions"),
         visible: true,
         pathlist: null,
       },
       {
         text: "Order",
         path: "/order",
-        icon:
-          pathname === "/order" ? (
-            <ActiveOrder />
-          ) : (
-            <Order active={true} fillColor="#5271FF" />
-          ),
-        active: pathname === "/order" ? true : false,
+        icon: pathname.startsWith("/order") ? (
+          <ActiveOrder />
+        ) : (
+          <Order active={true} fillColor="#5271FF" />
+        ),
+        active: pathname.startsWith("/order"),
         visible: true,
         pathlist: null,
       },
       {
         text: "Disputes",
         path: "/disputes",
-        icon:
-          pathname === "/disputes" ? (
-            <ActiveDispute />
-          ) : (
-            <Disputes active={true} fillColor="#5271FF" />
-          ),
-        active: pathname === "/disputes" ? true : false,
+        icon: pathname.startsWith("/disputes") ? (
+          <ActiveDispute />
+        ) : (
+          <Disputes active={true} fillColor="#5271FF" />
+        ),
+        active: pathname.startsWith("/disputes"),
         visible: true,
         pathlist: null,
       },
       {
         text: "Notification",
         path: "/notification",
-        icon:
-          pathname === "/notification" ? (
-            <ActiveNotification />
-          ) : (
-            <Notification active={true} fillColor="#5271FF" />
-          ),
-        active: pathname === "/notification" ? true : false,
+        icon: pathname.startsWith("/notification") ? (
+          <ActiveNotification />
+        ) : (
+          <Notification active={true} fillColor="#5271FF" />
+        ),
+        active: pathname.startsWith("/notification"),
         visible: true,
         pathlist: null,
       },

@@ -16,7 +16,7 @@ const Transactions = () => {
   }, [setHeaderTitle]);
 
   return (
-    <div className="overflow-auto h-[85vh]  2xl:h-[90vh]">
+    <div className="overflow-auto h-[85vh]  2xl:h-[100%]">
       <div className="flex justify-between items-center">
         <div className="w-[32%]">
           <Cards

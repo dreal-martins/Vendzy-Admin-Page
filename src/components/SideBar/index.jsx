@@ -95,13 +95,18 @@ export function SidebarItem({ icon, text, active, path, pathlist }) {
     }
   };
 
+  // Separate check for home route
+  const isActive = path === "/" ? pathname === "/" : pathname.startsWith(path);
+
+  console.log(isActive);
+
   return (
     <div
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleRoute}
       className={`group cursor-pointer relative flex justify-start items-center gap-4  ${
-        expanded && pathname === path ? "" : ""
+        expanded && isActive ? "" : ""
       }`}
     >
       <div
@@ -109,10 +114,10 @@ export function SidebarItem({ icon, text, active, path, pathlist }) {
           isHovered ? "text-[#5271ff]" : "text-[#9B9697]"
         }`}
       >
-        {expanded && pathname === path && <Rectangle />}
+        {expanded && isActive && <Rectangle />}
         <span className="pl-3">
           {React.cloneElement(icon, {
-            fillColor: isHovered ? "#5271FF" : "#9B9697",
+            fillColor: isHovered || isActive ? "#5271FF" : "#9B9697",
           })}
         </span>
         <span
@@ -122,9 +127,8 @@ export function SidebarItem({ icon, text, active, path, pathlist }) {
         >
           <span
             className={`${
-              (pathname === path ? "!text-[#5271FF]" : "text-[#9B9697]",
-              isHovered ? "text-[#5271FF]" : "text-[#9B9697]")
-            }  font-medium text-[1rem] py-3 `}
+              isActive || isHovered ? "text-[#5271FF]" : "text-[#9B9697]"
+            } font-medium text-[1rem] py-3`}
           >
             {text}
           </span>
