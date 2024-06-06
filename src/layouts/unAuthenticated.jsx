@@ -1,25 +1,25 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import logo from "../assets/images/logo.svg";
+import authImg from "../assets/images/authImage.svg";
 
 export default function UnAuthenticatedLayout() {
-  const year = new Date().getFullYear();
-
   return (
-    <div className="h-full w-full flex">
-      <div className="w-6/12 h-full pt-10 flex justify-center">
-        <div className="w-[60%] h-full flex flex-col justify-between">
-          <div className="h-[30%]">
-            <img src={logo} alt="img" />
-          </div>
-          <div className="h-[50%]">
-            <Outlet />
-          </div>
-          <div className="h-[20%] flex items-end py-2">
-            <p className="text-[0.75rem] font-normal text-text_color">
-              Vendyz © {year} . All Rights Reserved.{" "}
-            </p>
-          </div>
+    <div className="overflow-hidden h-[100vh]">
+      <div className="p-5 pb-[3rem]">
+        <img src={logo} alt="logo" />
+      </div>
+      <div className="flex justify-between items-start px-[8rem]">
+        <div className="w-[50%] h-full">
+          <img
+            src={authImg}
+            alt=""
+            className="w-[90%] h-full object-cover object-top"
+          />
+        </div>
+
+        <div className="w-[45%]">
+          <Outlet />
         </div>
       </div>
     </div>

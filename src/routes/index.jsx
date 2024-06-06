@@ -12,9 +12,8 @@ const FourZeroZero = lazy(() => import("../components/400"));
 
 // UnAuthentication Pages Imports
 const Signin = lazy(() => import("../modules/Signin"));
-const Signup = lazy(() => import("../modules/Signup"));
 const ResetPassword = lazy(() => import("../modules/ResetPassword"));
-const ResetPasswordEmail = lazy(() => import("../modules/ResetPassword/Email"));
+const ReqOtpCode = lazy(() => import("../modules/ResetPassword/ReqOtpCode"));
 
 // Authentication Pages Imports
 const OverView = lazy(() => import("../modules/OverView"));
@@ -203,15 +202,6 @@ const MainRoute = () => {
               errorElement: <FourZeroZero />,
             },
             {
-              path: "signup",
-              element: (
-                <Suspense fallback={<Loader />}>
-                  <Signup />
-                </Suspense>
-              ),
-              errorElement: <FourZeroZero />,
-            },
-            {
               path: "reset-password",
               children: [
                 {
@@ -227,7 +217,7 @@ const MainRoute = () => {
                   path: ":email/:data",
                   element: (
                     <Suspense fallback={<Loader />}>
-                      <ResetPasswordEmail />
+                      <ReqOtpCode />
                     </Suspense>
                   ),
                   errorElement: <FourZeroZero />,
