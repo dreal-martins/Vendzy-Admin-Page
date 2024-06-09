@@ -33,6 +33,9 @@ const DisputesDetails = lazy(() =>
 const NotificationsDetails = lazy(() =>
   import("../modules/Notifications/NotificationDetails")
 );
+const ChangePassword = lazy(() =>
+  import("../modules/ResetPassword/ChangePassword")
+);
 
 const MainBody = ({ children }) => {
   return (
@@ -218,6 +221,15 @@ const MainRoute = () => {
                   element: (
                     <Suspense fallback={<Loader />}>
                       <ReqOtpCode />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+                {
+                  path: "change-password",
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <ChangePassword />
                     </Suspense>
                   ),
                   errorElement: <FourZeroZero />,

@@ -1,12 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../contexts";
 import { FaArrowUpLong, FaArrowDownLong } from "react-icons/fa6";
 import disputesBreakDown from "../../assets/images/disputesBreakDown.svg";
 import orderImg1 from "../../assets/images/orderImg1.svg";
 import OverviewTable from "../../components/Tables/OverViewTable";
+import { getAllUserService } from "../../services";
+import { toast } from "react-toastify";
+import Loader from "../../components/Loader";
 
 const OverView = () => {
   const { setHeaderTitle } = useAppContext();
+  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState([]);
 
   const orders = [
     {
@@ -56,6 +61,37 @@ const OverView = () => {
   useEffect(() => {
     setHeaderTitle("OverView");
   }, [setHeaderTitle]);
+
+  useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const response = await getAllUserService();
+        if (response.success) {
+          console.log(response.data.data);
+          setUsers(response.data.data);
+        } else {
+          toast.error("An error occurred. Please try again later.");
+        }
+      } catch (error) {
+        console.log(error);
+        if (error.message === "Network Error") {
+          toast.error("Network error. Please check your internet connection.");
+        } else if (error.response) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error("An error occurred. Please try again later.");
+        }
+        setLoading(false);
+      }
+    };
+
+    getUsers();
+  }, []);
+
+  if (loading) {
+    <Loader />;
+  }
+
   return (
     <div className="flex justify-between items-start py-3 bg-[#fff] overflow-auto h-[85vh]  2xl:h-[90vh]">
       <div className="w-[68%]">
@@ -92,7 +128,7 @@ const OverView = () => {
             <div className="pt-5">
               <Cards
                 name={"Users"}
-                number={"3,008"}
+                number={users.length}
                 icon={<FaArrowUpLong className="text-[#449E6A]" />}
                 percentage={"+3.25%"}
                 days={"vs last 30 days"}
@@ -149,27 +185,28 @@ const OverView = () => {
             <div className="flex justify-center items-center flex-col">
               {orders.map((order, i) => {
                 return (
-                  <>
-                    <div className="flex justify-between items-start w-full py-4 border-t border-b rounded-xl px-3">
-                      <div className="w-[20%]">
-                        <img src={order.img} alt="" />
-                      </div>
-                      <div className="w-[50%]">
-                        <h2 className="text-[#232323] text-[0.9rem] font-medium">
-                          {order.name}
-                        </h2>
-                        <h2 className="text-[#5C5959] font-medium text-[0.9rem]">
-                          {order.amount}
-                        </h2>
-                        <h2 className="text-[#9B9697] text-[0.9rem]">
-                          {order.store}
-                        </h2>
-                      </div>
-                      <h2 className="border-[1.5px] text-[0.9rem] border-[#F0F0F0] px-3 py-1 bg-[#F4F4F4] rounded-full">
-                        {order.status}
+                  <div
+                    key={i}
+                    className="flex justify-between items-start w-full py-4 border-t border-b rounded-xl px-3"
+                  >
+                    <div className="w-[20%]">
+                      <img src={order.img} alt="" />
+                    </div>
+                    <div className="w-[50%]">
+                      <h2 className="text-[#232323] text-[0.9rem] font-medium">
+                        {order.name}
+                      </h2>
+                      <h2 className="text-[#5C5959] font-medium text-[0.9rem]">
+                        {order.amount}
+                      </h2>
+                      <h2 className="text-[#9B9697] text-[0.9rem]">
+                        {order.store}
                       </h2>
                     </div>
-                  </>
+                    <h2 className="border-[1.5px] text-[0.9rem] border-[#F0F0F0] px-3 py-1 bg-[#F4F4F4] rounded-full">
+                      {order.status}
+                    </h2>
+                  </div>
                 );
               })}
             </div>

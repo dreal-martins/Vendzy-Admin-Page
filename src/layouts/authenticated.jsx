@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet, useLocation, Navigate } from "react-router-dom";
 import Sidebar, { SidebarItem } from "../components/SideBar";
 import Header from "../components/Header";
 import { useSidebarContext } from "../contexts/sidebarContext";
@@ -15,14 +15,25 @@ import Disputes from "../components/Icons/Disputes";
 import ActiveDispute from "../components/Icons/ActiveDispute";
 import Notification from "../components/Icons/Notification";
 import ActiveNotification from "../components/Icons/ActiveNotification";
+import { checkTokenExpiry } from "../utils/checks";
+import {
+  // getAccessTokenFromLocalStore,
+  getRefreshTokenFromLocalStore,
+} from "../services";
 
 export default function AuthenticatedLayout() {
-  const [active, setActive] = useState(false);
   const [sidebarItems, setSidebarItems] = useState([]);
   const { expanded } = useSidebarContext();
-
   const location = useLocation();
   const { pathname } = location;
+
+  // const accessToken = getAccessTokenFromLocalStore();
+  const refreshToken = getRefreshTokenFromLocalStore();
+  // const isAccessTokenValid = accessToken && !checkTokenExpiry(accessToken);
+  const isRefreshTokenValid = refreshToken && !checkTokenExpiry(refreshToken);
+
+  // let isAuthenticated = isAccessTokenValid || isRefreshTokenValid;
+  let isAuthenticated = isRefreshTokenValid;
 
   useEffect(() => {
     const sidebarData = [
@@ -106,14 +117,6 @@ export default function AuthenticatedLayout() {
 
   const visibleSidebarItems = sidebarItems.filter((item) => item.visible);
 
-  const handleMouseEnter = () => {
-    setActive(true);
-  };
-
-  const handleMouseLeave = () => {
-    setActive(false);
-  };
-
   return (
     <div className={"h-full w-screen py-4 flex"}>
       <Sidebar>
@@ -128,8 +131,6 @@ export default function AuthenticatedLayout() {
               path={path}
               pathlist={pathlist ? pathlist : null}
               text={text}
-              handleMouseEnter={handleMouseEnter}
-              handleMouseLeave={handleMouseLeave}
             />
           );
         })}
@@ -143,7 +144,8 @@ export default function AuthenticatedLayout() {
           className={`h-[calc(100vh-3.5rem)] bg-[#fff] w-full relative px-3`}
         >
           <div className="py-3 h-full w-[95%] m-auto">
-            <Outlet />
+            {isAuthenticated ? <Outlet /> : <Navigate to="/auth" />}
+            {/* <Outlet /> */}
           </div>
         </div>
       </div>

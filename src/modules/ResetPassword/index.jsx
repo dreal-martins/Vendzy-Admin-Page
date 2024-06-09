@@ -1,11 +1,43 @@
 import React, { useState } from "react";
 import logo from "../../assets/images/logo.svg";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { forgotPasswordService } from "../../services";
+import { SyncLoader } from "react-spinners";
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const isFormValid = email !== "";
+
+  const handleResetPassword = async () => {
+    const data = {
+      email,
+    };
+
+    setLoading(true);
+    try {
+      const response = await forgotPasswordService(data);
+      if (response.success) {
+        toast.success(response.data.message);
+        navigate("/auth/reset-password/email/data");
+      } else {
+        toast.error("An error occurred. Please try again later.");
+      }
+      setLoading(false);
+    } catch (error) {
+      if (error.message === "Network Error") {
+        toast.error("Network error. Please check your internet connection.");
+      } else if (error.response) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An error occurred. Please try again later.");
+      }
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center flex-col">
@@ -31,15 +63,19 @@ const ResetPassword = () => {
         />
       </div>
 
-      <Link
-        to={"email/data"}
+      <button
+        onClick={handleResetPassword}
         className={`py-3 w-full rounded-full text-[#FFFFFF] font-medium text-center ${
           isFormValid ? "bg-[#5271FF]" : "bg-[#C3CEFF] cursor-not-allowed"
         }`}
         disabled={!isFormValid}
       >
-        Send code
-      </Link>
+        {loading ? (
+          <SyncLoader color={"#FFFFFF"} loading={loading} size={15} />
+        ) : (
+          "Send code"
+        )}
+      </button>
     </div>
   );
 };

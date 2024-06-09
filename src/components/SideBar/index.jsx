@@ -18,13 +18,13 @@ export default function Sidebar({ children }) {
           {expanded ? (
             <img
               src={logo_full}
-              alt="phylar logo"
+              alt="vendzy logo"
               className={`transition-all h-[35px] w-[138px] pl-1 `}
             />
           ) : (
             <img
               src={logo_full}
-              alt="phylar logo"
+              alt="vendzy logo"
               className={`transition-all w-[38px] h-[30px] pl-2`}
             />
           )}
@@ -72,7 +72,7 @@ export default function Sidebar({ children }) {
   );
 }
 
-export function SidebarItem({ icon, text, active, path, pathlist }) {
+export function SidebarItem({ icon, text, path, pathlist }) {
   const { expanded } = useSidebarContext();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -95,10 +95,7 @@ export function SidebarItem({ icon, text, active, path, pathlist }) {
     }
   };
 
-  // Separate check for home route
   const isActive = path === "/" ? pathname === "/" : pathname.startsWith(path);
-
-  console.log(isActive);
 
   return (
     <div
