@@ -70,7 +70,7 @@ const Merchants = () => {
             </button>
             <button className="flex justify-start items-center border border-[#F0F0F0] rounded-full py-1 px-3 gap-2 shadow-2xl">
               <span>
-                <img src={filterIcon} alt="ion" />
+                <img src={filterIcon} alt="icon" />
               </span>
               Filter
             </button>
