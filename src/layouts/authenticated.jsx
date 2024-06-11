@@ -15,6 +15,8 @@ import Disputes from "../components/Icons/Disputes";
 import ActiveDispute from "../components/Icons/ActiveDispute";
 import Notification from "../components/Icons/Notification";
 import ActiveNotification from "../components/Icons/ActiveNotification";
+import Merchant from "../components/Icons/Store";
+import ActiveMerchant from "../components/Icons/ActiveStore";
 import { checkTokenExpiry } from "../utils/checks";
 import {
   // getAccessTokenFromLocalStore,
@@ -57,6 +59,18 @@ export default function AuthenticatedLayout() {
           <ActiveUser />
         ) : (
           <User active={true} fillColor="#5271FF" />
+        ),
+        active: pathname.startsWith("/users"),
+        visible: true,
+        pathlist: null,
+      },
+      {
+        text: "Merchant",
+        path: "/merchants",
+        icon: pathname.startsWith("/merchants") ? (
+          <ActiveMerchant />
+        ) : (
+          <Merchant active={true} fillColor="#5271FF" />
         ),
         active: pathname.startsWith("/users"),
         visible: true,

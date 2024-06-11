@@ -18,11 +18,15 @@ const ReqOtpCode = lazy(() => import("../modules/ResetPassword/ReqOtpCode"));
 // Authentication Pages Imports
 const OverView = lazy(() => import("../modules/OverView"));
 const Users = lazy(() => import("../modules/Users"));
+const Merchants = lazy(() => import("../modules/Merchants"));
 const Transactions = lazy(() => import("../modules/Transactions"));
 const Orders = lazy(() => import("../modules/Orders"));
 const Disputes = lazy(() => import("../modules/Disputes"));
 const Notifications = lazy(() => import("../modules/Notifications"));
 const UserDetail = lazy(() => import("../modules/Users/UserDetail"));
+const MerchantDetail = lazy(() =>
+  import("../modules/Merchants/MerchantDetail")
+);
 const TransactionDetails = lazy(() =>
   import("../modules/Transactions/TransactionDetails")
 );
@@ -86,6 +90,29 @@ const MainRoute = () => {
                   element: (
                     <Suspense fallback={<Loader />}>
                       <UserDetail />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+              ],
+            },
+            {
+              path: "merchants",
+              children: [
+                {
+                  index: true,
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <Merchants />
+                    </Suspense>
+                  ),
+                  errorElement: <FourZeroZero />,
+                },
+                {
+                  path: ":merchants-detail",
+                  element: (
+                    <Suspense fallback={<Loader />}>
+                      <MerchantDetail />
                     </Suspense>
                   ),
                   errorElement: <FourZeroZero />,

@@ -14,6 +14,21 @@ const Notifications = () => {
   const { setHeaderTitle } = useAppContext();
   const [modal, setModal] = useState(false);
   const [mode, setMode] = useState("");
+  const [user, setUser] = useState("");
+  const [channel, setChannel] = useState("");
+  const [type, setType] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [message, setMessage] = useState("");
+
+  const isFormValid =
+    mode !== "" &&
+    user !== "" &&
+    channel !== "" &&
+    type !== "" &&
+    title !== "" &&
+    description !== "" &&
+    message !== "";
 
   useEffect(() => {
     setHeaderTitle("Notifications");
@@ -25,11 +40,13 @@ const Notifications = () => {
   const handleCloseModal = () => {
     setModal(false);
   };
+
   const filterOption = (input, option) =>
     (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
   return (
     <div className="overflow-auto h-[85vh]  2xl:h-[90vh]">
+      {" "}
       <div className="flex justify-between items-center">
         <div className="border p-3 rounded-3xl w-[45%]">
           <h2 className="text-[#5C5959] text-[0.9rem]">Notifications</h2>
@@ -92,7 +109,6 @@ const Notifications = () => {
           </div>
         </div>
       </div>
-
       <div className="pt-8">
         <div className="px-3 py-4 border border-[#F0F0F0] rounded-3xl flex justify-between items-center">
           <h2 className="text-[#5C5959] text-[0.9rem]">Notifications</h2>
@@ -198,6 +214,7 @@ const Notifications = () => {
                         label: "Mofe James",
                       },
                     ]}
+                    onChange={(value) => setUser(value)}
                     // onChange={onChange}
                     // onSearch={onSearch}
                   />
@@ -218,6 +235,7 @@ const Notifications = () => {
                         label: "Email",
                       },
                     ]}
+                    onChange={(value) => setChannel(value)}
                     // onChange={(value) => setMode(value)}
                   />
                 </div>
@@ -235,7 +253,7 @@ const Notifications = () => {
                         label: "Promotions",
                       },
                     ]}
-                    // onChange={(value) => setMode(value)}
+                    onChange={(value) => setType(value)}
                   />
                 </div>
               </div>
@@ -246,6 +264,7 @@ const Notifications = () => {
                   </label>
                   <input
                     type="text"
+                    onChange={(e) => setTitle(e.target.value)}
                     className="w-full rounded-lg border py-1 outline-none px-3 mt-1 mb-3"
                   />
                 </div>
@@ -256,6 +275,7 @@ const Notifications = () => {
                   <input
                     type="text"
                     className="w-full rounded-lg border py-1 outline-none px-3 mt-1 mb-3"
+                    onChange={(e) => setDescription(e.target.value)}
                   />
                 </div>
               </div>
@@ -263,13 +283,25 @@ const Notifications = () => {
                 <label className="block text-[0.9rem] text-[#5C5959]">
                   Message
                 </label>
-                <textarea className="w-full resize-none rounded-xl border py-1 outline-none px-3 mt-1 mb-3"></textarea>
+                <textarea
+                  className="w-full resize-none rounded-xl border py-1 outline-none px-3 mt-1 mb-3"
+                  onChange={(e) => setMessage(e.target.value)}
+                ></textarea>
               </div>
               <div className="flex justify-between items-center gap-5">
-                <button className="w-full rounded-2xl border text-[#5C5959] font-medium text-[1rem] py-1.5">
+                <button
+                  onClick={handleCloseModal}
+                  className="w-full rounded-2xl border text-[#5C5959] font-medium text-[1rem] py-1.5"
+                >
                   Cancel
                 </button>
-                <button className="w-full rounded-2xl border text-[#FFFFFF] font-medium text-[1rem] py-1.5 bg-[#5271FF]">
+                <button
+                  className={`w-full rounded-2xl border text-[#FFFFFF] font-medium text-[1rem] py-1.5 ${
+                    isFormValid
+                      ? "bg-[#5271FF]"
+                      : "bg-[#C3CEFF] cursor-not-allowed"
+                  } `}
+                >
                   Send
                 </button>
               </div>

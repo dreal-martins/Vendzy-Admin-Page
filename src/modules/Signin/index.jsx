@@ -106,7 +106,7 @@ const SignIn = () => {
         onClick={handleLogin}
         className={`py-3 w-full rounded-full text-[#FFFFFF] font-medium ${
           isFormValid ? "bg-[#5271FF]" : "bg-[#C3CEFF] cursor-not-allowed"
-        }`}
+        } ${loading ? "cursor-progress" : "cursor-default"}`}
         disabled={!isFormValid}
       >
         {loading ? (

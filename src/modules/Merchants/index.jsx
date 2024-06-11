@@ -1,82 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useAppContext } from "../../contexts";
 import { FaArrowUpLong, FaArrowDownLong } from "react-icons/fa6";
 import { Cards } from "../OverView";
 import refreshIcon from "../../assets/icons/refreshIcon.svg";
 import filterIcon from "../../assets/icons/sortIcon.svg";
 import searchIcon from "../../assets/icons/searchIcon.svg";
-import UserTable from "../../components/Tables/UserTable";
-import { getAllUserService } from "../../services";
-import { toast } from "react-toastify";
+import MerchantTable from "../../components/Tables/MerchantTable";
 
-const Users = () => {
+const Merchants = () => {
   const { setHeaderTitle } = useAppContext();
-  const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    setHeaderTitle("Users");
+    setHeaderTitle("Merchants");
   }, [setHeaderTitle]);
-
-  useEffect(() => {
-    const getUsers = async () => {
-      try {
-        const response = await getAllUserService();
-        if (response.success) {
-          setUsers(response.data.data);
-        } else {
-          toast.error("An error occurred. Please try again later.");
-        }
-      } catch (error) {
-        if (error.message === "Network Error") {
-          toast.error("Network error. Please check your internet connection.");
-        } else if (error.response) {
-          toast.error(error.response.data.message);
-        } else {
-          toast.error("An error occurred. Please try again later.");
-        }
-        setLoading(false);
-      }
-    };
-
-    getUsers();
-  }, []);
-
-  const filterUsers = (users) => {
-    const filteredUsers = {
-      users: [],
-      buyers: [],
-      sellers: [],
-    };
-
-    users.forEach((user) => {
-      switch (user.user_type) {
-        case "USER":
-          filteredUsers.users.push(user);
-          break;
-        case "buyer":
-          filteredUsers.buyers.push(user);
-          break;
-        case "seller":
-          filteredUsers.sellers.push(user);
-          break;
-        default:
-          break;
-      }
-    });
-
-    return filteredUsers;
-  };
-
-  const filteredMembers = filterUsers(users);
-
-  console.log("Users:", filteredMembers.users);
-  console.log("Buyers:", filteredMembers.buyers);
-  console.log("Sellers:", filteredMembers.sellers);
-
-  const filteredUsers = filteredMembers.users;
-  const filteredBuyers = filteredMembers.buyers;
-  const filteredSellers = filteredMembers.sellers;
 
   return (
     <div className="overflow-auto h-[85vh]  2xl:h-[90vh]">
@@ -84,7 +20,7 @@ const Users = () => {
         <div className="w-[32%]">
           <Cards
             name={"Users"}
-            number={filteredUsers.length}
+            number={"3,008"}
             days={"vs last 30 days"}
             percentage={"+3.25%"}
             icon={<FaArrowUpLong className="text-[#449E6A]" />}
@@ -94,7 +30,7 @@ const Users = () => {
         <div className="w-[32%]">
           <Cards
             name={"Vendors"}
-            number={filteredSellers.length}
+            number={"2,156"}
             days={"vs last 30 days"}
             percentage={"+3.25%"}
             icon={<FaArrowUpLong className="text-[#449E6A]" />}
@@ -104,7 +40,7 @@ const Users = () => {
         <div className="w-[32%]">
           <Cards
             name={"Buyers"}
-            number={filteredBuyers.length}
+            number={"852"}
             days={"vs last 30 days"}
             percentage={"+3.25%"}
             icon={<FaArrowDownLong className="text-[#E51837]" />}
@@ -114,7 +50,7 @@ const Users = () => {
       </div>
       <div className="pt-8">
         <div className="px-3 py-4 border border-[#F0F0F0] rounded-3xl flex justify-between items-center">
-          <h2>Users</h2>
+          <h2>Merchants</h2>
           <div className="flex justify-between items-center w-[45%]">
             <div className="w-[55%] relative ">
               <input
@@ -140,10 +76,10 @@ const Users = () => {
             </button>
           </div>
         </div>
-        <UserTable />
+        <MerchantTable />
       </div>
     </div>
   );
 };
 
-export default Users;
+export default Merchants;
