@@ -1,27 +1,59 @@
 import React, { useEffect, useState } from "react";
 import arrowRightIcon from "../../../assets/icons/arrowRightIcon.svg";
 import { FaChevronDown } from "react-icons/fa6";
-import inemAtikuImg from "../../../assets/images/inemAtiku.svg";
 import messageIcon from "../../../assets/icons/messageIcon.svg";
 import phoneIcon from "../../../assets/icons/phoneIcon.svg";
-import nationalIdCard from "../../../assets/images/nationalIdCard.svg";
 import avatar from "../../../assets/icons/avatarIcon.svg";
-import avatar2 from "../../../assets/images/emmanuelIsreal.svg";
-import proofOfAddress from "../../../assets/icons/proofOfAddress.svg";
 import Transactions from "../../Transactions";
 import Orders from "../../Orders";
 import { useAppContext } from "../../../contexts";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import { getUserById, getUserDocsService } from "../../../services";
+import Loader from "../../../components/Loader";
+import { getInitials, handleBackNavigate } from "../../../utils/helper";
 
 const UserDetail = () => {
   const [isDetailExpanded, setIsDetailExpanded] = useState(true);
   const [isKycExpanded, setIsKycExpanded] = useState(false);
   const [istransactionExpanded, setIsTransactionExpanded] = useState(false);
   const [isOrderedExpanded, setIsOrderedExpanded] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState({});
+  const [userDocs, setUserDocs] = useState({});
   const { setHeaderTitle } = useAppContext();
+  const { userId } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setHeaderTitle("User");
   }, [setHeaderTitle]);
+
+  useEffect(() => {
+    const getUserDetails = async () => {
+      try {
+        const response = await getUserById(userId);
+        if (response.success) {
+          setUser(response.data);
+          const getUserDocs = await getUserDocsService(userId);
+          setUserDocs(getUserDocs.data);
+        } else {
+          toast.error("An error occurred. Please try again later.");
+        }
+        setLoading(false);
+      } catch (error) {
+        if (error.message === "Network Error") {
+          toast.error("Network error. Please check your internet connection.");
+        } else if (error.response) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error("An error occurred. Please try again later.");
+        }
+        setLoading(false);
+      }
+    };
+    getUserDetails();
+  }, [userId]);
 
   const handleDetail = () => {
     setIsDetailExpanded(!isDetailExpanded);
@@ -46,10 +78,20 @@ const UserDetail = () => {
     setIsOrderedExpanded(!isOrderedExpanded);
   };
 
+  if (loading) {
+    return <Loader />;
+  }
+
+  const defaultPic =
+    "https://res.cloudinary.com/dfruoqaze/image/upload/v1718272879/nfmbcd53l2xxaqpsop3y.jpg";
+
   return (
     <div className="h-[85vh] overflow-auto">
       <div className="flex justify-between items-center">
-        <button className="flex justify-between items-center border border-[#F0F0F0] rounded-full text-[#5C5959] px-4 py-2 gap-2 shadow-lg">
+        <button
+          onClick={() => handleBackNavigate(navigate)}
+          className="flex justify-between items-center border border-[#F0F0F0] rounded-full text-[#5C5959] px-4 py-2 gap-2 shadow-lg"
+        >
           <span>
             <img src={arrowRightIcon} alt="icon" />
           </span>
@@ -83,24 +125,38 @@ const UserDetail = () => {
           <div className="flex justify-start items-start p-5">
             <div className="w-[40%]">
               <div className="flex justify-start items-center gap-4 pb-4">
-                <div>
-                  <img src={inemAtikuImg} alt="img" className="w-full h-full" />
+                <div className="border border-[#F0F0F0] rounded-full">
+                  <img
+                    src={user.user_avatar_url || defaultPic}
+                    alt="img"
+                    className="w-[96px] h-[96px] rounded-full"
+                  />
                 </div>
                 <div className="">
-                  <h2 className="text-[#232323] font-bold text-[1.4rem]">
-                    Inem Atiku
+                  <h2 className="text-[#232323] font-bold text-[1.4rem] capitalize">
+                    {user.first_name || "-"} {user.last_name || "-"}
                   </h2>
-                  <button className="text-[#EF5959] bg-[#FFE8E8] border border-[#FFBBBB] cursor-default text-[0.9rem] py-0.5 px-3 rounded-full">
-                    Inactive
+                  <button
+                    className={`${
+                      user.account_status === "ACTIVE"
+                        ? "border border-[#83F3B2] text-[#449E6A] bg-[#EFFFF6] text-center rounded-full py-1 px-3 text-[0.9rem]"
+                        : "border border-[#FFBBBB] bg-[#FFE8E8] text-[#EF5959] text-center rounded-full py-1 px-3 text-[0.9rem]"
+                    }`}
+                  >
+                    {user.account_status}
                   </button>
                 </div>
               </div>
               <div className="flex justify-start items-center gap-2 pb-4">
-                <div className="">
-                  <img src={messageIcon} alt="" />
+                <div className="cursor-pointer">
+                  <a href={`mailto:${user.email}`}>
+                    <img src={messageIcon} alt="Email" />
+                  </a>
                 </div>
-                <div className="">
-                  <img src={phoneIcon} alt="" />
+                <div className="cursor-pointer">
+                  <a href={`tel:${user.phone}`}>
+                    <img src={phoneIcon} alt="Phone" />
+                  </a>
                 </div>
               </div>
               <div className="flex justify-start items-center gap-5">
@@ -117,71 +173,71 @@ const UserDetail = () => {
             <div className="w-[25%]">
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">User ID</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">093</h2>
+                <h2 className="text-[1rem] text-[#232323] font-medium">
+                  {user.id || "-"}
+                </h2>
               </div>
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">First name</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">Inem</h2>
+                <h2 className="text-[1rem] text-[#232323] font-medium capitalize">
+                  {user.first_name || "-"}
+                </h2>
               </div>
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Last name</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">
-                  Atiku
+                <h2 className="text-[1rem] text-[#232323] font-medium capitalize">
+                  {user.last_name || "-"}
                 </h2>
               </div>
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Email</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  inem@vendyz.com
+                  {user.email || "-"}
                 </h2>
               </div>
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Phone number</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  +2348048740391
+                  {user.phone || "-"}
                 </h2>
               </div>
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Payment ID</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  www.vendyz.com/inem
+                  www.vendyz.com/{user.first_name || "-"}
                 </h2>
               </div>
             </div>
 
             <div className="w-[25%]">
-              <div className="pb-6">
-                <h2 className="text-[#9B9697] text-[0.9rem]">Business name</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">
-                  Sweet Cheeks
-                </h2>
-              </div>
-              <div className="pb-6">
+              <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Address</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">
-                  House 4A Chief Afolabi Akinsanya Cresent
+                <h2 className="text-[1rem] text-[#232323] font-medium capitalize">
+                  {user.contact_address}
                 </h2>
               </div>
-              <div className="pb-6">
+              <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Country</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">
-                  Nigeria
+                <h2 className="text-[1rem] text-[#232323] font-medium capitalize">
+                  {user.country || "-"}
                 </h2>
               </div>
-              <div className="pb-6">
+              <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">State</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">
-                  Lagos
+                <h2 className="text-[1rem] text-[#232323] font-medium capitalize">
+                  {user.state || "-"}
                 </h2>
               </div>
-              <div className="pb-6">
+              <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">LGA</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">-</h2>
+                <h2 className="text-[1rem] text-[#232323] font-medium capitalize">
+                  {user.city || "-"}
+                </h2>
               </div>
-              <div className="pb-6">
+              <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Account type</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">
-                  Vendor
+                <h2 className="text-[1rem] text-[#232323] font-medium capitalize">
+                  {user.user_type}
                 </h2>
               </div>
             </div>
@@ -212,63 +268,133 @@ const UserDetail = () => {
           <div className="flex justify-between items-start p-5">
             <div className="flex w-[40%] justify-between items-start gap-11">
               <div className="p-4">
-                <div className="w-[200px] h-[200px] 2xl:w-[300px] 2xl:h-[300px]">
-                  <img src={nationalIdCard} alt="" className="w-full h-full" />
+                <div className="w-[200px] h-[200px] 2xl:w-[270px] 2xl:h-[270px] border-[3px] border-[#F0F0F0] shadow-xl rounded-[3.2rem] p-5 items-center flex justify-center">
+                  {userDocs.identification_doc_url ? (
+                    <img
+                      src={userDocs.identification_doc_url}
+                      alt=""
+                      className="w-full h-full"
+                    />
+                  ) : (
+                    <span className="text-[#9B9697] text-[0.9rem]">
+                      No file
+                    </span>
+                  )}
                 </div>
-                <div className="pb-5">
+                <div className="py-5">
                   <h2 className="text-[#9B9697] text-[0.9rem] 2xl:text-[1rem] pb-2">
                     ID Type
                   </h2>
-                  <h2 className="text-[#232323] text-[1rem] 2xl:text-[1.1rem] font-bold pb-3">
-                    National ID card
+                  <h2 className="text-[#232323] text-[1rem] 2xl:text-[1.1rem] font-bold pb-3 capitalize">
+                    {userDocs.identification_doc || "-"}
                   </h2>
-                  <button className="border-[1.5px] border-[#83F3B2] bg-[#EFFFF6] text-[#449E6A] py-1 px-3 rounded-full text-[0.9rem] 2xl:text-[1rem]">
-                    Approved
-                  </button>
+                  {userDocs.owner_docs_verification_status === "VERIFIED" ? (
+                    <button className="border-[1.5px] border-[#83F3B2] bg-[#EFFFF6] text-[#449E6A] py-1 px-3 rounded-full text-[0.9rem] 2xl:text-[1rem]">
+                      Approved
+                    </button>
+                  ) : userDocs.owner_docs_verification_status === "PENDING" ? (
+                    <button className="border-[1.5px] border-[#83F3B2] bg-[#EFFFF6] text-[#232323] py-1 px-3 rounded-full text-[0.9rem] 2xl:text-[1rem]">
+                      Pending
+                    </button>
+                  ) : (
+                    <button className="border-[1.5px] border-[#FFBBBB] bg-[#FFE8E8] text-[#EF5959] py-1 px-3 rounded-full text-[0.9rem] 2xl:text-[1rem]">
+                      Disapproved
+                    </button>
+                  )}
                 </div>
                 <div className="pb-4">
                   <h2 className="text-[#9B9697] text-[0.9rem] 2xl:text-[1rem] pb-1">
                     ID number
                   </h2>
                   <h2 className="text-[#232323] text-[1rem] 2xl:text-[1.1rem] font-medium pb-1">
-                    2022561635
+                    {userDocs.identification_number || "-"}
                   </h2>
                 </div>
-                <div className="flex justify-start items-center gap-2">
-                  <img src={avatar} alt="" />
-                  <div className="">
-                    <h2 className="text-[1rem] 2xl:text-[1.1rem] text-[#9B9697]">
-                      Moses Chima
-                    </h2>
+                {userDocs.owner_docs_verification_status === "PENDING" ? (
+                  <div className="flex justify-between items-center gap-3">
+                    <button className="bg-[#5271FF] rounded-full py-2 px-4 text-[1rem] text-[#FFFFFF] shadow-xl">
+                      Approve
+                    </button>
+                    <button className="bg-[#FFFFFF] rounded-full py-2 px-4 text-[1rem] text-[#5C5959] shadow-xl border border-[#F0F0F0]">
+                      Disapprove
+                    </button>
                   </div>
-                </div>
+                ) : userDocs.verified_by ? (
+                  <div className="flex justify-start items-center gap-2">
+                    <div className="w-[32px] h-[32px] rounded-full bg-[#5271FF] text-white flex justify-center items-center text-[0.875rem] capitalize">
+                      {getInitials(userDocs.verified_by)}
+                    </div>
+                    <div>
+                      <h2 className="text-[1rem] 2xl:text-[1.1rem] text-[#9B9697]">
+                        {userDocs.verified_by}
+                      </h2>
+                    </div>
+                  </div>
+                ) : (
+                  "-"
+                )}
               </div>
               <div className="p-4">
-                <div className="w-[200px] h-[200px] 2xl:w-[300px] 2xl:h-[300px]">
-                  <img src={proofOfAddress} alt="" className="w-full h-full" />
+                <div className="w-[200px] h-[200px] 2xl:w-[270px] 2xl:h-[270px] border-[3px] border-[#F0F0F0] shadow-xl rounded-[3.2rem] p-5 items-center flex justify-center">
+                  {userDocs.proof_of_address_url ? (
+                    <img
+                      src={userDocs.proof_of_address_url}
+                      alt=""
+                      className="w-full h-full"
+                    />
+                  ) : (
+                    <span className="text-[#9B9697] text-[0.9rem]">
+                      No file
+                    </span>
+                  )}
                 </div>
-                <div className="pb-5">
+                <div className="py-5">
                   <h2 className="text-[#9B9697] text-[0.9rem] 2xl:text-[1rem] pb-2">
                     Document type
                   </h2>
-                  <h2 className="text-[#232323] text-[1rem] 2xl:text-[1.1rem] font-bold pb-3">
-                    Proof of address
+                  <h2 className="text-[#232323] text-[1rem] 2xl:text-[1.1rem] font-bold pb-3 capitalize">
+                    {userDocs.proof_of_address_doc || "-"}
                   </h2>
-                  <button className="border-[1.5px] border-[#83F3B2] bg-[#EFFFF6] text-[#449E6A] py-1 px-3 rounded-full text-[0.9rem] 2xl:text-[1rem]">
-                    Approved
-                  </button>
+                  {userDocs.proof_of_address_verification_status ===
+                  "VERIFIED" ? (
+                    <button className="border-[1.5px] border-[#83F3B2] bg-[#EFFFF6] text-[#449E6A] py-1 px-3 rounded-full text-[0.9rem] 2xl:text-[1rem]">
+                      Approved
+                    </button>
+                  ) : userDocs.owner_docs_verification_status === "PENDING" ? (
+                    <button className="border-[1.5px] border-[#83F3B2] bg-[#EFFFF6] text-[#232323] py-1 px-3 rounded-full text-[0.9rem] 2xl:text-[1rem]">
+                      Pending
+                    </button>
+                  ) : (
+                    <button className="border-[1.5px] border-[#FFBBBB] bg-[#FFE8E8] text-[#EF5959] py-1 px-3 rounded-full text-[0.9rem] 2xl:text-[1rem]">
+                      Disapproved
+                    </button>
+                  )}
                 </div>
-                <div className="flex justify-start items-center gap-2">
-                  <img src={avatar2} alt="" />
-                  <div className="">
-                    <h2 className="text-[1rem] 2xl:text-[1.1rem] text-[#9B9697]">
-                      Emmanuel Israel
-                    </h2>
+                {userDocs.proof_of_address_verification_status === "PENDING" ? (
+                  <div className="flex justify-between items-center gap-3">
+                    <button className="bg-[#5271FF] rounded-full py-2 px-4 text-[1rem] text-[#FFFFFF] shadow-xl">
+                      Approve
+                    </button>
+                    <button className="bg-[#FFFFFF] rounded-full py-2 px-4 text-[1rem] text-[#5C5959] shadow-xl border border-[#F0F0F0]">
+                      Disapprove
+                    </button>
                   </div>
-                </div>
+                ) : userDocs.verified_by ? (
+                  <div className="flex justify-start items-center gap-2">
+                    <div className="w-[32px] h-[32px] rounded-full bg-[#5271FF] text-white flex justify-center items-center text-[0.875rem] capitalize">
+                      {getInitials(userDocs.verified_by)}
+                    </div>
+                    <div>
+                      <h2 className="text-[1rem] 2xl:text-[1.1rem] text-[#9B9697]">
+                        {userDocs.verified_by}
+                      </h2>
+                    </div>
+                  </div>
+                ) : (
+                  "-"
+                )}
               </div>
             </div>
-
             <div className="p-4 w-[35%]">
               <div className="pb-5">
                 <h2 className="text-[#9B9697] text-[0.9rem] pb-2">BVN</h2>
@@ -281,7 +407,7 @@ const UserDetail = () => {
               </div>
               <div className="flex justify-start items-center gap-2">
                 <img src={avatar} alt="" />
-                <div className="">
+                <div>
                   <h2>Moses Chima</h2>
                 </div>
               </div>

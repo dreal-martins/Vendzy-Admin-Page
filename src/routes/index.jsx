@@ -86,7 +86,7 @@ const MainRoute = () => {
                   errorElement: <FourZeroZero />,
                 },
                 {
-                  path: ":user-detail",
+                  path: "user-detail/:userId",
                   element: (
                     <Suspense fallback={<Loader />}>
                       <UserDetail />
@@ -109,7 +109,7 @@ const MainRoute = () => {
                   errorElement: <FourZeroZero />,
                 },
                 {
-                  path: ":merchants-detail",
+                  path: "merchant-detail/:merchantId",
                   element: (
                     <Suspense fallback={<Loader />}>
                       <MerchantDetail />

@@ -10,41 +10,107 @@ import avatar2 from "../../../assets/images/emmanuelIsreal.svg";
 import proofOfAddress from "../../../assets/icons/proofOfAddress.svg";
 import Transactions from "../../Transactions";
 import Orders from "../../Orders";
+import MerchantTable from "../../../components/Tables/MerchantTable";
 import { useAppContext } from "../../../contexts";
+import { useParams } from "react-router-dom";
+import {
+  getMerchantByIdService,
+  getMerchantDocsService,
+} from "../../../services/merchant";
+import { toast } from "react-toastify";
+import Loader from "../../../components/Loader";
 
 const MerchantDetail = () => {
-  const [isDetailExpanded, setIsDetailExpanded] = useState(true);
+  const [contactedPersonsExpanded, setContactedPersonsExpended] =
+    useState(true);
+  const [isDetailExpanded, setIsDetailExpanded] = useState(false);
   const [isKycExpanded, setIsKycExpanded] = useState(false);
   const [istransactionExpanded, setIsTransactionExpanded] = useState(false);
   const [isOrderedExpanded, setIsOrderedExpanded] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { setHeaderTitle } = useAppContext();
+  const { merchantId } = useParams();
+  const [merchant, setMerchant] = useState({});
+  const [merchantDocs, setMerchantDocs] = useState({});
 
   useEffect(() => {
     setHeaderTitle("Merchants");
   }, [setHeaderTitle]);
 
+  const handleContactedPerson = () => {
+    setContactedPersonsExpended(!contactedPersonsExpanded);
+    setIsDetailExpanded(false);
+    setIsKycExpanded(false);
+    setIsTransactionExpanded(false);
+    setIsOrderedExpanded(false);
+  };
+
   const handleDetail = () => {
     setIsDetailExpanded(!isDetailExpanded);
+    setContactedPersonsExpended(false);
     setIsKycExpanded(false);
+    setIsTransactionExpanded(false);
+    setIsOrderedExpanded(false);
   };
 
   const handleKyc = () => {
     setIsDetailExpanded(false);
+    setContactedPersonsExpended(false);
+    setIsTransactionExpanded(false);
+    setIsOrderedExpanded(false);
     setIsKycExpanded(!isKycExpanded);
   };
 
   const handleTransaction = () => {
     setIsDetailExpanded(false);
+    setContactedPersonsExpended(false);
     setIsKycExpanded(false);
+    setIsOrderedExpanded(false);
     setIsTransactionExpanded(!istransactionExpanded);
   };
 
   const handleOrder = () => {
     setIsDetailExpanded(false);
+    setContactedPersonsExpended(false);
     setIsKycExpanded(false);
     setIsTransactionExpanded(false);
     setIsOrderedExpanded(!isOrderedExpanded);
   };
+
+  useEffect(() => {
+    const getMerchantDetails = async () => {
+      try {
+        const response = await getMerchantByIdService(merchantId);
+        if (response.success) {
+          setMerchant(response.data);
+          const merchantDocs = await getMerchantDocsService(merchantId);
+          console.log(merchantDocs);
+          setMerchantDocs(merchantDocs.data);
+        } else {
+          toast.error("An error occurred. Please try again later.");
+        }
+        setLoading(false);
+      } catch (error) {
+        if (error.message === "Network Error") {
+          toast.error("Network error. Please check your internet connection.");
+        } else if (error.response) {
+          toast.error(error.response.data.message);
+        } else {
+          toast.error("An error occurred. Please try again later.");
+        }
+        setLoading(false);
+      }
+    };
+    getMerchantDetails();
+  }, [merchantId]);
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  const fullName = `${merchant.first_name || "-"} ${merchant.last_name || "-"}`;
+  const defaultPic =
+    "https://res.cloudinary.com/dfruoqaze/image/upload/v1718272879/nfmbcd53l2xxaqpsop3y.jpg";
 
   return (
     <div className="h-[85vh] overflow-auto">
@@ -58,6 +124,36 @@ const MerchantDetail = () => {
         <button className="bg-[#EF5959] text-white border border-[#F0F0F0] rounded-full px-4 py-2 shadow-lg">
           Suspend account
         </button>
+      </div>
+
+      <div className="pt-7">
+        <div
+          onClick={handleContactedPerson}
+          className={`border border-[#F0F0F0] rounded-lg flex justify-between items-center py-3 px-3  ${
+            contactedPersonsExpanded ? "bg-[#F6F6F6]" : "bg-[#FFFFFF]"
+          }`}
+        >
+          <h2 className="text-[#232323] font-bold text-[1rem]">
+            Contacted Person
+          </h2>
+          <div
+            onClick={handleContactedPerson}
+            className="p-2 bg-[#FFFFFF] rounded-full cursor-pointer"
+          >
+            <FaChevronDown
+              style={{
+                transform: contactedPersonsExpanded
+                  ? "rotate(180deg)"
+                  : "rotate(0deg)",
+              }}
+            />
+          </div>
+        </div>
+        {contactedPersonsExpanded && (
+          <div className="py-5">
+            <MerchantTable />
+          </div>
+        )}
       </div>
 
       <div className="pt-7">
@@ -79,19 +175,30 @@ const MerchantDetail = () => {
             />
           </div>
         </div>
+
         {isDetailExpanded && (
           <div className="flex justify-start items-start p-5">
             <div className="w-[40%]">
               <div className="flex justify-start items-center gap-4 pb-4">
                 <div>
-                  <img src={inemAtikuImg} alt="img" className="w-full h-full" />
+                  <img
+                    src={merchant.user_avertar_url || defaultPic}
+                    alt="img"
+                    className="w-[96px] h-[96px] rounded-full"
+                  />
                 </div>
                 <div className="">
-                  <h2 className="text-[#232323] font-bold text-[1.4rem]">
-                    Inem Atiku
+                  <h2 className="text-[#232323] font-bold text-[1.4rem] capitalize">
+                    {fullName}
                   </h2>
-                  <button className="text-[#EF5959] bg-[#FFE8E8] border border-[#FFBBBB] cursor-default text-[0.9rem] py-0.5 px-3 rounded-full">
-                    Inactive
+                  <button
+                    className={`${
+                      merchant.account_status === "ACTIVE"
+                        ? "border border-[#83F3B2] text-[#449E6A] bg-[#EFFFF6] text-center rounded-full py-1 px-3 text-[0.9rem] cursor-default"
+                        : "border border-[#FFBBBB] bg-[#FFE8E8] text-[#EF5959] text-center rounded-full py-1 px-3 text-[0.9rem] cursor-default"
+                    }`}
+                  >
+                    {merchant.account_status}
                   </button>
                 </div>
               </div>
@@ -117,34 +224,38 @@ const MerchantDetail = () => {
             <div className="w-[25%]">
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">User ID</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">093</h2>
+                <h2 className="text-[1rem] text-[#232323] font-medium">
+                  {merchant.id}
+                </h2>
               </div>
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">First name</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">Inem</h2>
+                <h2 className="text-[1rem] text-[#232323] font-medium">
+                  {merchant.first_name}
+                </h2>
               </div>
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Last name</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  Atiku
+                  {merchant.last_name}
                 </h2>
               </div>
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Email</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  inem@vendyz.com
+                  {merchant.email}
                 </h2>
               </div>
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Phone number</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  +2348048740391
+                  {merchant.phone}
                 </h2>
               </div>
               <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Payment ID</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  www.vendyz.com/inem
+                  {merchant.payment || "-"}
                 </h2>
               </div>
             </div>
@@ -153,35 +264,37 @@ const MerchantDetail = () => {
               <div className="pb-6">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Business name</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  Sweet Cheeks
+                  {merchant.merchant_business.business_name || "-"}
                 </h2>
               </div>
-              <div className="pb-6">
+              <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Address</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  House 4A Chief Afolabi Akinsanya Cresent
+                  {merchant.address || "-"}
                 </h2>
               </div>
-              <div className="pb-6">
+              <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Country</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  Nigeria
+                  {merchant.country || "-"}
                 </h2>
               </div>
-              <div className="pb-6">
+              <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">State</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  Lagos
+                  {merchant.state || "-"}
                 </h2>
               </div>
-              <div className="pb-6">
+              <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">LGA</h2>
-                <h2 className="text-[1rem] text-[#232323] font-medium">-</h2>
+                <h2 className="text-[1rem] text-[#232323] font-medium">
+                  {merchant.city || "-"}
+                </h2>
               </div>
-              <div className="pb-6">
+              <div className="pb-[30px]">
                 <h2 className="text-[#9B9697] text-[0.9rem]">Account type</h2>
                 <h2 className="text-[1rem] text-[#232323] font-medium">
-                  Vendor
+                  {merchant.user_type || "-"}
                 </h2>
               </div>
             </div>

@@ -12,10 +12,10 @@ axios.defaults.headers.post["Content-Type"] =
 const apiService = async (
   method = "post",
   url,
-  requestData = {},
+  requestData = null,
   protectedRoute = false,
   headers = {},
-  params = {}
+  baseURL = process.env.REACT_APP_BASE_URL || ""
 ) => {
   if (protectedRoute) {
     // const accessToken = getAccessTokenFromLocalStore();
@@ -24,7 +24,6 @@ const apiService = async (
     // if (!accessToken || checkTokenExpiry(accessToken)) {
     if (!refreshToken || checkTokenExpiry(refreshToken)) {
       clearAllTokens();
-      // window.location.href = "/auth";
       return;
     }
     // }
@@ -42,9 +41,8 @@ const apiService = async (
     method,
     url,
     data: requestData,
-    baseURL: process.env.REACT_APP_BASE_URL || "",
+    baseURL,
     headers,
-    params,
   });
   return data;
 };

@@ -67,7 +67,6 @@ const OverView = () => {
       try {
         const response = await getAllUserService();
         if (response.success) {
-          console.log(response.data.data);
           setUsers(response.data.data);
         } else {
           toast.error("An error occurred. Please try again later.");

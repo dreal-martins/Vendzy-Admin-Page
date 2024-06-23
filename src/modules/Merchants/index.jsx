@@ -6,6 +6,8 @@ import refreshIcon from "../../assets/icons/refreshIcon.svg";
 import filterIcon from "../../assets/icons/sortIcon.svg";
 import searchIcon from "../../assets/icons/searchIcon.svg";
 import MerchantTable from "../../components/Tables/MerchantTable";
+import { toast } from "react-toastify";
+import { getAllMerchantService } from "../../services/merchant";
 
 const Merchants = () => {
   const { setHeaderTitle } = useAppContext();
@@ -13,6 +15,25 @@ const Merchants = () => {
   useEffect(() => {
     setHeaderTitle("Merchants");
   }, [setHeaderTitle]);
+
+  // useEffect(() => {
+  //   const getMerchants = async () => {
+  //     try {
+  //       const response = await getAllMerchantService();
+  //       console.log(response);
+  //     } catch (error) {
+  //       console.log(error);
+  //       if (error.message === "Network Error") {
+  //         toast.error("Network error. Please check your internet connection.");
+  //       } else if (error.response) {
+  //         toast.error(error.response.data.message);
+  //       } else {
+  //         toast.error("An error occurred. Please try again later.");
+  //       }
+  //     }
+  //   };
+  //   getMerchants();
+  // }, []);
 
   return (
     <div className="overflow-auto h-[85vh]  2xl:h-[90vh]">

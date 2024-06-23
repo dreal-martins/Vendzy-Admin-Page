@@ -8,6 +8,7 @@ import searchIcon from "../../assets/icons/searchIcon.svg";
 import UserTable from "../../components/Tables/UserTable";
 import { getAllUserService } from "../../services";
 import { toast } from "react-toastify";
+import Loader from "../../components/Loader";
 
 const Users = () => {
   const { setHeaderTitle } = useAppContext();
@@ -69,14 +70,13 @@ const Users = () => {
   };
 
   const filteredMembers = filterUsers(users);
-
-  console.log("Users:", filteredMembers.users);
-  console.log("Buyers:", filteredMembers.buyers);
-  console.log("Sellers:", filteredMembers.sellers);
-
   const filteredUsers = filteredMembers.users;
   const filteredBuyers = filteredMembers.buyers;
   const filteredSellers = filteredMembers.sellers;
+
+  if (loading) {
+    <Loader />;
+  }
 
   return (
     <div className="overflow-auto h-[85vh]  2xl:h-[90vh]">
